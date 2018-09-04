@@ -12,3 +12,6 @@ class TencentVideoItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     pass
+
+class VideoListItem(scrapy.Item):
+    info = scrapy.Field()
