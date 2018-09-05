@@ -1,5 +1,5 @@
 import scrapy, os
-import datetime, re
+import datetime, re, copy
 from pyquery import PyQuery as pq
 from ..items import VideoListItem
 from ..scrapy_helper import delete_old_logs
@@ -67,6 +67,7 @@ class VideoListSpider(scrapy.Spider):
                      'channel_url': each.attr.href,
                      'route': [type_name]}
             if type_name in self.target_channel_name:
+                self.logger.info('route:{}({})'.format(parms['route'], response.url))
                 yield scrapy.Request(each.attr.href,
                                      callback=self.final_list_page,
                                      meta={'parms': parms},
@@ -92,7 +93,7 @@ class VideoListSpider(scrapy.Spider):
         for each in doc('.filter_line a').items():
             if each.text() in self.filter:
                 continue
-            next_parms = parms
+            next_parms = copy.deepcopy(parms)
             next_parms['route'] = [parms['type_name'], each.text()]
             if 'http' not in each.attr.href:
                 each.attr.href = parms['channel_url'] + each.attr.href
@@ -114,15 +115,15 @@ class VideoListSpider(scrapy.Spider):
         parms = response.meta['parms']
         if int(list(doc('.option_txt > em').items())[0].text()) >= self.judge_more_filter_thr:
             for each in doc('.filter_tabs a').items():
-                self.logger.info('route:{}==>{}'.format(parms['route'], each.text()))
                 if 'http' not in each.attr.href:
                     each.attr.href = parms['channel_url'] + each.attr.href
+                self.logger.info('route:{}==>{}({})'.format(parms['route'], each.text(), each.attr.href))
                 yield scrapy.Request(each.attr.href,
                                      callback=self.final_list_page,
                                      meta={'parms': parms},
                                      dont_filter=True)
         else:
-            self.logger.info('route:{}'.format(parms['route']))
+            self.logger.info('route:{}({})'.format(parms['route'], response.url))
             self.final_list_page(response)
 
     def final_list_page(self, response):
