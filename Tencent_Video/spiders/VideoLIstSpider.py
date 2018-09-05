@@ -67,7 +67,7 @@ class VideoListSpider(scrapy.Spider):
                      'channel_url': each.attr.href,
                      'route': [type_name]}
             if type_name in self.target_channel_name:
-                self.logger.info('route:{}({})'.format(parms['route'], response.url))
+                self.logger.info('route:{}({})'.format(parms['route'], each.attr.href))
                 yield scrapy.Request(each.attr.href,
                                      callback=self.final_list_page,
                                      meta={'parms': parms},
@@ -89,7 +89,7 @@ class VideoListSpider(scrapy.Spider):
                                  dont_filter=True)
             return
         parms = response.meta['parms']
-        self.judge_more_filter(response)
+        yield from self.judge_more_filter(response)
         for each in doc('.filter_line a').items():
             if each.text() in self.filter:
                 continue
@@ -124,7 +124,7 @@ class VideoListSpider(scrapy.Spider):
                                      dont_filter=True)
         else:
             self.logger.info('route:{}({})'.format(parms['route'], response.url))
-            self.final_list_page(response)
+            yield from self.final_list_page(response)
 
     def final_list_page(self, response):
         try:
