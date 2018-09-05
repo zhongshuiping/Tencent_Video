@@ -91,6 +91,7 @@ class VideoListSpider(scrapy.Spider):
         for each in doc('.filter_line a').items():
             if each.text() in self.filter:
                 continue
+            self.logger.info('{}==>{}'.format(parms['type_name'], each.text()))
             if 'http' not in each.attr.href:
                 each.attr.href = parms['channel_url'] + each.attr.href
             yield scrapy.Request(each.attr.href,
@@ -111,6 +112,7 @@ class VideoListSpider(scrapy.Spider):
         parms = response.meta['parms']
         if int(list(doc('.option_txt > em').items())[0].text()) >= self.judge_more_filter_thr:
             for each in doc('.filter_tabs a').items():
+                self.logger.info('{}==>{}'.format(parms['type_name'], each.text()))
                 if 'http' not in each.attr.href:
                     each.attr.href = parms['channel_url'] + each.attr.href
                 yield scrapy.Request(each.attr.href,
