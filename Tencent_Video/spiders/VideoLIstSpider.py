@@ -67,7 +67,7 @@ class VideoListSpider(scrapy.Spider):
                      'channel_url': each.attr.href,
                      'route': [type_name]}
             if type_name in self.target_channel_name:
-                self.logger.info('route:{}({})'.format(parms['route'], each.attr.href))
+                self.logger.debug('route:{}({})'.format(parms['route'], each.attr.href))
                 yield scrapy.Request(each.attr.href,
                                      callback=self.final_list_page,
                                      meta={'parms': parms},
@@ -117,13 +117,13 @@ class VideoListSpider(scrapy.Spider):
             for each in doc('.filter_tabs a').items():
                 if 'http' not in each.attr.href:
                     each.attr.href = parms['channel_url'] + each.attr.href
-                self.logger.info('route:{}==>{}({})'.format(parms['route'], each.text(), each.attr.href))
+                self.logger.debug('route:{}==>{}({})'.format(parms['route'], each.text(), each.attr.href))
                 yield scrapy.Request(each.attr.href,
                                      callback=self.final_list_page,
                                      meta={'parms': parms},
                                      dont_filter=True)
         else:
-            self.logger.info('route:{}({})'.format(parms['route'], response.url))
+            self.logger.debug('route:{}({})'.format(parms['route'], response.url))
             yield from self.final_list_page(response)
 
     def final_list_page(self, response):
