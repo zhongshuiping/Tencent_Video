@@ -31,7 +31,10 @@ class VideoListSpider(scrapy.Spider):
     }
 
     def __init__(self):
-        self.target_channel_name = ['电影', '电视剧', '综艺', '动漫', '少儿', '纪录片', '微电影']
+        self.target_channel_name = ['电视剧', '综艺', '动漫', '少儿', '纪录片']
+        self.crawl_all_channel = ['电影', '微电影']
+        self.filter = ['全部']
+        self.judge_more_filter_thr = 5000
         self.host = 'https://v.qq.com'
         delete_old_logs(self.name, 3)
 
@@ -57,17 +60,65 @@ class VideoListSpider(scrapy.Spider):
                                  dont_filter=True)
             return
         for each in doc('.mod_filter a').items():
-            each_text = each.text()
-            if each_text in self.target_channel_name:
-                type_name = each_text
-                if 'http' not in each.attr.href:
-                    each.attr.href = self.host + each.attr.href
-                parms = {'type_name': type_name,
-                         'channel_url': each.attr.href}
+            type_name = each.text()
+            if 'http' not in each.attr.href:
+                each.attr.href = self.host + each.attr.href
+            parms = {'type_name': type_name,
+                     'channel_url': each.attr.href}
+            if type_name in self.target_channel_name:
                 yield scrapy.Request(each.attr.href,
                                      callback=self.final_list_page,
                                      meta={'parms': parms},
                                      dont_filter=True)
+            if type_name in self.crawl_all_channel:
+                yield scrapy.Request(each.attr.href,
+                                     callback=self.parse_crawl_all,
+                                     meta={'parms': parms},
+                                     dont_filter=True)
+
+    def parse_crawl_all(self, response):
+        try:
+            doc = pq(response.text)
+        except Exception as e:
+            self.logger.warning('pq对象创建失败，url：{},状态码：{},失败原因：{}'.format(response.url, response.status, e))
+            yield scrapy.Request(response.url,
+                                 callback=self.parse_crawl_all,
+                                 meta=response.meta,
+                                 dont_filter=True)
+            return
+        parms = response.meta['parms']
+        self.judge_more_filter(response)
+        for each in doc('.filter_line a').items():
+            if each.text() in self.filter:
+                continue
+            if 'http' not in each.attr.href:
+                each.attr.href = parms['channel_url'] + each.attr.href
+            yield scrapy.Request(each.attr.href,
+                                 callback=self.judge_more_filter,
+                                 meta={'parms': parms},
+                                 dont_filter=True)
+
+    def judge_more_filter(self, response):
+        try:
+            doc = pq(response.text)
+        except Exception as e:
+            self.logger.warning('pq对象创建失败，url：{},状态码：{},失败原因：{}'.format(response.url, response.status, e))
+            yield scrapy.Request(response.url,
+                                 callback=self.judge_more_filter,
+                                 meta=response.meta,
+                                 dont_filter=True)
+            return
+        parms = response.meta['parms']
+        if int(list(doc('.option_txt > em').items())[0].text()) >= self.judge_more_filter_thr:
+            for each in doc('.filter_tabs a').items():
+                if 'http' not in each.attr.href:
+                    each.attr.href = parms['channel_url'] + each.attr.href
+                yield scrapy.Request(each.attr.href,
+                                     callback=self.final_list_page,
+                                     meta={'parms': parms},
+                                     dont_filter=True)
+        else:
+            self.final_list_page(response)
 
     def final_list_page(self, response):
         try:
