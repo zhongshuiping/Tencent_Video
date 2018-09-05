@@ -52,7 +52,9 @@ class VideoListSpider(scrapy.Spider):
             doc = pq(response.text)
         except Exception as e:
             self.logger.warning('pq对象创建失败，url：{},失败原因：{}'.format(response.url, e))
-            yield scrapy.Request(response.url, callback=self.parse, dont_filter=True)
+            yield scrapy.Request(response.url,
+                                 callback=self.parse,
+                                 dont_filter=True)
             return
         for each in doc('.mod_filter a').items():
             each_text = each.text()
@@ -62,14 +64,20 @@ class VideoListSpider(scrapy.Spider):
                     each.attr.href = self.host + each.attr.href
                 parms = {'type_name': type_name,
                          'channel_url': each.attr.href}
-                yield scrapy.Request(each.attr.href, callback=self.final_list_page, meta={'parms': parms})
+                yield scrapy.Request(each.attr.href,
+                                     callback=self.final_list_page,
+                                     meta={'parms': parms},
+                                     dont_filter=True)
 
     def final_list_page(self, response):
         try:
             doc = pq(response.text)
         except Exception as e:
             self.logger.warning('pq对象创建失败，url：{},状态码：{},失败原因：{}'.format(response.url, response.status, e))
-            yield scrapy.Request(response.url, callback=self.final_list_page, meta=response.meta, dont_filter=True)
+            yield scrapy.Request(response.url,
+                                 callback=self.final_list_page,
+                                 meta=response.meta,
+                                 dont_filter=True)
             return
         parms = response.meta['parms']
         for each in doc('.page_next').items():
@@ -78,7 +86,10 @@ class VideoListSpider(scrapy.Spider):
             else:
                 if 'http' not in each.attr.href:
                     each.attr.href = parms['channel_url'] + each.attr.href
-                yield scrapy.Request(each.attr.href, callback=self.final_list_page, meta=response.meta, dont_filter=True)
+                yield scrapy.Request(each.attr.href,
+                                     callback=self.final_list_page,
+                                     meta=response.meta,
+                                     dont_filter=True)
         item_l = list(doc('.list_item').items())
         for item in item_l:
             data = {}
@@ -121,7 +132,10 @@ class VideoListSpider(scrapy.Spider):
                 yield item_
             else:
                 next_parms = data
-                yield scrapy.Request(data['url'], callback=self.variety_final_page, meta={'parms': next_parms})
+                yield scrapy.Request(data['url'],
+                                     callback=self.variety_final_page,
+                                     meta={'parms': next_parms},
+                                     dont_filter=True)
 
     def variety_final_page(self, response):
         if response.status in [302]:
@@ -131,7 +145,10 @@ class VideoListSpider(scrapy.Spider):
             doc = pq(response.text)
         except Exception as e:
             self.logger.warning('pq对象创建失败，url：{},状态码：{},失败原因：{}'.format(response.url, response.status, e))
-            yield scrapy.Request(response.url, callback=self.variety_final_page, meta=response.meta, dont_filter=True)
+            yield scrapy.Request(response.url,
+                                 callback=self.variety_final_page,
+                                 meta=response.meta,
+                                 dont_filter=True)
             return
         data = response.meta['parms']
         album_a = doc('.player_title > a')
