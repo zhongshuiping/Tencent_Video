@@ -64,7 +64,8 @@ class VideoListSpider(scrapy.Spider):
             if 'http' not in each.attr.href:
                 each.attr.href = self.host + each.attr.href
             parms = {'type_name': type_name,
-                     'channel_url': each.attr.href}
+                     'channel_url': each.attr.href,
+                     'route': [type_name]}
             if type_name in self.target_channel_name:
                 yield scrapy.Request(each.attr.href,
                                      callback=self.final_list_page,
@@ -91,12 +92,13 @@ class VideoListSpider(scrapy.Spider):
         for each in doc('.filter_line a').items():
             if each.text() in self.filter:
                 continue
-            self.logger.info('{}==>{}'.format(parms['type_name'], each.text()))
+            next_parms = parms
+            next_parms['route'] = [parms['type_name'], each.text()]
             if 'http' not in each.attr.href:
                 each.attr.href = parms['channel_url'] + each.attr.href
             yield scrapy.Request(each.attr.href,
                                  callback=self.judge_more_filter,
-                                 meta={'parms': parms},
+                                 meta={'parms': next_parms},
                                  dont_filter=True)
 
     def judge_more_filter(self, response):
@@ -112,7 +114,7 @@ class VideoListSpider(scrapy.Spider):
         parms = response.meta['parms']
         if int(list(doc('.option_txt > em').items())[0].text()) >= self.judge_more_filter_thr:
             for each in doc('.filter_tabs a').items():
-                self.logger.info('{}==>{}'.format(parms['type_name'], each.text()))
+                self.logger.info('route:{}==>{}'.format(parms['route'], each.text()))
                 if 'http' not in each.attr.href:
                     each.attr.href = parms['channel_url'] + each.attr.href
                 yield scrapy.Request(each.attr.href,
@@ -120,6 +122,7 @@ class VideoListSpider(scrapy.Spider):
                                      meta={'parms': parms},
                                      dont_filter=True)
         else:
+            self.logger.info('route:{}'.format(parms['route']))
             self.final_list_page(response)
 
     def final_list_page(self, response):
