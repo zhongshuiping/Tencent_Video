@@ -22,9 +22,9 @@ class PlayInfoSpider(RedisSpider):
         'LOG_FILE': 'logs/PlayInfoSpider_' + str(datetime.datetime.now()) + '.log',
         'REDIRECT_ENABLED': False,
         'DOWNLOAD_DELAY': 0,
-        'DOWNLOAD_TIMEOUT': 10,
+        'DOWNLOAD_TIMEOUT': 7,
         'RETRY_TIMES': 30,
-        'CONCURRENT_REQUESTS': 50,
+        'CONCURRENT_REQUESTS': 30,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 200,
         'CONCURRENT_REQUESTS_PER_IP': 0,
         'EXTENSIONS': {'bo_lib.scrapy_tools.CloseSpiderRedis': 0},
@@ -62,6 +62,7 @@ class PlayInfoSpider(RedisSpider):
         cid = params['cid']
         used_cid = params['used_cid']
         if response.status in self.handle_httpstatus_list:
+            self.logger.warning('超过重试次数,url：{}，状态码：{},继续重试'.format(response.url, response.status))
             yield scrapy.Request(response.url,
                                  callback=self.common_parse,
                                  meta={'params': params},
@@ -104,6 +105,7 @@ class PlayInfoSpider(RedisSpider):
         cid = params['cid']
         used_cid = params['used_cid']
         if response.status in self.handle_httpstatus_list:
+            self.logger.warning('超过重试次数,url：{}，状态码：{},继续重试'.format(response.url, response.status))
             yield scrapy.Request(response.url,
                                  callback=self.zongyi_parse,
                                  meta={'params': params},
