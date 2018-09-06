@@ -67,6 +67,7 @@ class PlayInfoSpider(RedisSpider):
                                  meta={'params': params},
                                  dont_filter=True)
             return
+        '''
         try:
             data_str = re.findall(r'COVER_INFO = (\{\S+?\})\s+?var', response.text)[0]
             #album_data_dict = json.loads(data_str)
@@ -77,14 +78,15 @@ class PlayInfoSpider(RedisSpider):
                                  meta={'params': params},
                                  dont_filter=True)
             return
+        '''
         positive_play_count = -1
         play_count = -1
-        try:positive_play_count = int(re.findall(r'"positive_view_all_count":(\d+)', data_str)[0])#album_data_dict['positive_view_all_count']
-        except:self.logger.warning('该专辑无正片播放量字段请check，url：{}，album_data_dict：{}'
-                                   .format(response.url, data_str))
-        try:play_count = int(re.findall(r'"view_all_count":(\d+)', data_str)[0])
-        except:self.logger.warning('该专辑无播放量字段请check，url：{}，album_data_dict：{}'
-                                   .format(response.url, data_str))
+        try:positive_play_count = int(re.findall(r'"positive_view_all_count":(\d+)', response.text)[0])
+        except:self.logger.warning('该专辑无正片播放量字段请check，url：{}'
+                                   .format(response.url))
+        try:play_count = int(re.findall(r'"view_all_count":(\d+)', response.text)[0])
+        except:self.logger.warning('该专辑无播放量字段请check，url：{}'
+                                   .format(response.url))
         data = {
             'cid': cid,
             'type_name': type_name,
@@ -107,6 +109,7 @@ class PlayInfoSpider(RedisSpider):
                                  meta={'params': params},
                                  dont_filter=True)
             return
+        '''
         try:
             data_str = re.findall(r'COLUMN_INFO = (\{\S+?\})\s+?var', response.text)[0]
             #album_data_dict = json.loads(data_str)
@@ -117,19 +120,15 @@ class PlayInfoSpider(RedisSpider):
                                  meta={'params': params},
                                  dont_filter=True)
             return
+        '''
         positive_play_count = -1
         play_count = -1
-        #columnview = album_data_dict.get('columnview', {})
-        #if columnview:
-        try:positive_play_count = int(re.findall(r'"c_allnumc_m":(\d+)', data_str)[0])#columnview['c_allnumc_m']
-        except:self.logger.warning('该综艺专辑无正片播放量字段请check，url：{}，columnview：{}'
-                                   .format(response.url, data_str))
-        try:play_count = int(re.findall(r'"c_allnumc":(\d+)', data_str)[0])#album_data_dict['c_allnumc']
-        except:self.logger.warning('该综艺专辑无播放量字段请check，url：{}，columnview：{}'
-                                   .format(response.url, data_str))
-        #else:
-        #    self.logger.warning('该综艺专辑无columnview字段请check，url：{}，album_data_dict：{}'
-        #                        .format(response.url, album_data_dict))
+        try:positive_play_count = int(re.findall(r'"c_allnumc_m":(\d+)', response.text)[0])
+        except:self.logger.warning('该综艺专辑无正片播放量字段请check，url：{}'
+                                   .format(response.url))
+        try:play_count = int(re.findall(r'"c_allnumc":(\d+)', response.text)[0])
+        except:self.logger.warning('该综艺专辑无播放量字段请check，url：{}'
+                                   .format(response.url))
         data = {
             'cid': cid,
             'type_name': type_name,
