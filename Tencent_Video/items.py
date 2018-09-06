@@ -18,3 +18,6 @@ class VideoListItem(scrapy.Item):
 
 class VidItem(scrapy.Item):
     info = scrapy.Field()
+
+class PlayInfoItem(scrapy.Item):
+    info = scrapy.Field()

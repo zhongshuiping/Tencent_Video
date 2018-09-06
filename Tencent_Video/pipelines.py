@@ -16,6 +16,7 @@ class TencentVideoPipeline(object):
         self.video_list_coll = self.client.get_collection(collection_name='video_list', database_name='TX_Video')
         self.history_video_list_coll = self.client.get_collection(collection_name='history_video_list', database_name='TX_Video')
         self.cid_vid_coll = self.client.get_collection(collection_name='cid_vid', database_name='TX_Video')
+        self.play_info_coll = self.client.get_collection(collection_name='play_info', database_name='TX_Video')
 
     def process_item(self, item, spider):
         info = item['info']
@@ -26,6 +27,8 @@ class TencentVideoPipeline(object):
             self.process_video_list(item)
         elif isinstance(item, VidItem):
             self.process_cid_vid(info)
+        elif isinstance(item, PlayInfoItem):
+            self.process_play_info(info)
 
         return item
 
@@ -33,6 +36,9 @@ class TencentVideoPipeline(object):
         video_info = item['info']
         self.video_list_coll.update_one({'cid': video_info['cid']}, {'$set': video_info}, upsert=True)
         self.history_video_list_coll.insert_one(video_info)
+
+    def process_play_info(self, info):
+        self.play_info_coll.insert_one(info)
 
     def process_cid_vid(self, info):
         cid = info.pop('cid')
