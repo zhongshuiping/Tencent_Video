@@ -8,7 +8,7 @@ from ..items import PlayInfoItem
 class PlayInfoSpider(RedisSpider):
     name = 'PlayInfoSpider'
     redis_key = 'TX_Video_PlayInfoSpider_key'
-    handle_httpstatus_list = [503, 429, 302, 402]
+    handle_httpstatus_list = [503, 429, 402]
     os.makedirs('logs', exist_ok=True)
     custom_settings = {
         'DEFAULT_REQUEST_HEADERS': {
