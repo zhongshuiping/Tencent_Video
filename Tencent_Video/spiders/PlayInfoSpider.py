@@ -68,7 +68,7 @@ class PlayInfoSpider(RedisSpider):
                                  dont_filter=True)
             return
         try:
-            data_str = re.findall(r'COVER_INFO = (\{\S+?\})\svar', response.text)[0]
+            data_str = re.findall(r'COVER_INFO = (\{\S+?\})\s+?var', response.text)[0]
             #album_data_dict = json.loads(data_str)
         except Exception as e:
             self.logger.warning('json串解析出错，重试：{}, {}, {}'.format(e, response.status, response.url))
@@ -108,7 +108,7 @@ class PlayInfoSpider(RedisSpider):
                                  dont_filter=True)
             return
         try:
-            data_str = re.findall(r'COLUMN_INFO = (\{\S+?\})\svar', response.text)[0]
+            data_str = re.findall(r'COLUMN_INFO = (\{\S+?\})\s+?var', response.text)[0]
             #album_data_dict = json.loads(data_str)
         except Exception as e:
             self.logger.warning('json串解析出错，重试：{}, {}, {}'.format(e, response.status, response.url))
