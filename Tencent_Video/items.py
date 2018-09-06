@@ -15,3 +15,6 @@ class TencentVideoItem(scrapy.Item):
 
 class VideoListItem(scrapy.Item):
     info = scrapy.Field()
+
+class VidItem(scrapy.Item):
+    info = scrapy.Field()
