@@ -24,7 +24,7 @@ class PlayInfoSpider(RedisSpider):
         'DOWNLOAD_DELAY': 0,
         'DOWNLOAD_TIMEOUT': 10,
         'RETRY_TIMES': 30,
-        'CONCURRENT_REQUESTS': 3,
+        'CONCURRENT_REQUESTS': 50,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 200,
         'CONCURRENT_REQUESTS_PER_IP': 0,
         'EXTENSIONS': {'bo_lib.scrapy_tools.CloseSpiderRedis': 0},
