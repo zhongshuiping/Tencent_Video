@@ -24,7 +24,7 @@ class PlayInfoSpider(RedisSpider):
         'DOWNLOAD_DELAY': 0,
         'DOWNLOAD_TIMEOUT': 10,
         'RETRY_TIMES': 30,
-        'CONCURRENT_REQUESTS': 10,
+        'CONCURRENT_REQUESTS': 3,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 200,
         'CONCURRENT_REQUESTS_PER_IP': 0,
         'EXTENSIONS': {'bo_lib.scrapy_tools.CloseSpiderRedis': 0},
@@ -68,7 +68,7 @@ class PlayInfoSpider(RedisSpider):
                                  dont_filter=True)
             return
         try:
-            data_str = re.findall(r'COVER_INFO = (\{\S+\})', response.text)[0]
+            data_str = re.findall(r'COVER_INFO = (\{\S+?\})\svar', response.text)[0]
             #album_data_dict = json.loads(data_str)
         except Exception as e:
             self.logger.warning('json串解析出错，重试：{}, {}, {}'.format(e, response.status, response.url))
@@ -108,7 +108,7 @@ class PlayInfoSpider(RedisSpider):
                                  dont_filter=True)
             return
         try:
-            data_str = re.findall(r'COLUMN_INFO = (\{\S+\})', response.text)[0]
+            data_str = re.findall(r'COLUMN_INFO = (\{\S+?\})\svar', response.text)[0]
             #album_data_dict = json.loads(data_str)
         except Exception as e:
             self.logger.warning('json串解析出错，重试：{}, {}, {}'.format(e, response.status, response.url))
