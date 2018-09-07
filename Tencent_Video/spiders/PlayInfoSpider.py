@@ -8,7 +8,7 @@ from ..items import PlayInfoItem
 class PlayInfoSpider(RedisSpider):
     name = 'PlayInfoSpider'
     redis_key = 'TX_Video_PlayInfoSpider_key'
-    handle_httpstatus_list = [503, 429, 402]
+    handle_httpstatus_list = [503, 429, 402, 404, 302, 564]
     os.makedirs('logs', exist_ok=True)
     custom_settings = {
         'DEFAULT_REQUEST_HEADERS': {
@@ -61,6 +61,19 @@ class PlayInfoSpider(RedisSpider):
         type_name = params['type_name']
         cid = params['cid']
         used_cid = params['used_cid']
+        if response.status in [302, 404]: #302 404 页面无播放量 直接入库
+            data = {
+                'cid': cid,
+                'type_name': type_name,
+                'used_cid': used_cid,
+                'play_count': -1,
+                'positive_play_count': -1,
+                'err_type': response.status,
+            }
+            item = PlayInfoItem()
+            item['info'] = data
+            yield item
+            return
         if response.status in self.handle_httpstatus_list:
             self.logger.warning('超过重试次数,url：{}，状态码：{},继续重试'.format(response.url, response.status))
             yield scrapy.Request(response.url,
@@ -88,22 +101,48 @@ class PlayInfoSpider(RedisSpider):
         try:play_count = int(re.findall(r'"view_all_count":(\d+)', response.text)[0])
         except:self.logger.warning('该专辑无播放量字段请check，url：{}'
                                    .format(response.url))
-        data = {
-            'cid': cid,
-            'type_name': type_name,
-            'used_cid': used_cid,
-            'play_count': play_count,
-            'positive_play_count': positive_play_count,
-        }
-        item = PlayInfoItem()
-        item['info'] = data
-        yield item
+        if positive_play_count == -1 or play_count == -1:
+            data = {
+                'cid': cid,
+                'type_name': type_name,
+                'used_cid': used_cid,
+                'play_count': play_count,
+                'positive_play_count': positive_play_count,
+                'err_type': 'no_play_count_fields',
+            }
+            item = PlayInfoItem()
+            item['info'] = data
+            yield item
+        else:
+            data = {
+                'cid': cid,
+                'type_name': type_name,
+                'used_cid': used_cid,
+                'play_count': play_count,
+                'positive_play_count': positive_play_count,
+            }
+            item = PlayInfoItem()
+            item['info'] = data
+            yield item
 
     def zongyi_parse(self, response):
         params = response.meta['params']
         type_name = params['type_name']
         cid = params['cid']
         used_cid = params['used_cid']
+        if response.status in [302, 404]: #302 404 页面无播放量 直接入库
+            data = {
+                'cid': cid,
+                'type_name': type_name,
+                'used_cid': used_cid,
+                'play_count': -1,
+                'positive_play_count': -1,
+                'err_type': response.status,
+            }
+            item = PlayInfoItem()
+            item['info'] = data
+            yield item
+            return
         if response.status in self.handle_httpstatus_list:
             self.logger.warning('超过重试次数,url：{}，状态码：{},继续重试'.format(response.url, response.status))
             yield scrapy.Request(response.url,
@@ -131,16 +170,29 @@ class PlayInfoSpider(RedisSpider):
         try:play_count = int(re.findall(r'"c_allnumc":(\d+)', response.text)[0])
         except:self.logger.warning('该综艺专辑无播放量字段请check，url：{}'
                                    .format(response.url))
-        data = {
-            'cid': cid,
-            'type_name': type_name,
-            'used_cid': used_cid,
-            'play_count': play_count,
-            'positive_play_count': positive_play_count,
-        }
-        item = PlayInfoItem()
-        item['info'] = data
-        yield item
+        if positive_play_count == -1 or play_count == -1:
+            data = {
+                'cid': cid,
+                'type_name': type_name,
+                'used_cid': used_cid,
+                'play_count': play_count,
+                'positive_play_count': positive_play_count,
+                'err_type': 'no_play_count_fields',
+            }
+            item = PlayInfoItem()
+            item['info'] = data
+            yield item
+        else:
+            data = {
+                'cid': cid,
+                'type_name': type_name,
+                'used_cid': used_cid,
+                'play_count': play_count,
+                'positive_play_count': positive_play_count,
+            }
+            item = PlayInfoItem()
+            item['info'] = data
+            yield item
 
 
 
