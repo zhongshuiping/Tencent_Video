@@ -61,7 +61,7 @@ class CommentInfoSpider(RedisSpider):
                                   meta={'params': params},
                                   dont_filter=True)
         else:
-            url = self.get_vid_comment_id_url.format(cid=used_id)
+            url = self.get_vid_comment_id_url.format(vid=used_id)
             params = {'cid': cid,
                       'used_id': used_id,
                       'type_name': type_name,
@@ -124,7 +124,7 @@ class CommentInfoSpider(RedisSpider):
                                  meta={'params': params},
                                  dont_filter=True)
             return
-        comment_num = comment_num_dict['commentnum']
+        comment_num = comment_num_dict['data']['commentnum']
         try:comment_num = int(comment_num)
         except:self.logger.warning('评论量字段为非数字，url：{}，comment_num：{}'.format(response.url, comment_num))
         params['comment_num'] = comment_num
