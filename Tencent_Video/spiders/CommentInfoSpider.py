@@ -96,6 +96,11 @@ class CommentInfoSpider(RedisSpider):
         comment_id = comment_id_dict['comment_id']
         if comment_id == '0':
             self.logger.info('comment_id为0，url：{}，cid：{}'.format(response.url, params['cid']))
+            params['comment_num'] = 0
+            params['err_type'] = 'no_comment_id'
+            item = CommentInfoItem()
+            item['info'] = params
+            yield item
             return
         srcid = comment_id_dict['srcid']
         url = self.commentnum_url.format(comment_id=comment_id)
