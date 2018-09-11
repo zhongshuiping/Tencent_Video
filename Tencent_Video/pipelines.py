@@ -25,20 +25,24 @@ class TencentVideoPipeline(object):
         info['ts_string'] = str(datetime.date.today())
 
         if isinstance(item, VideoListItem):
-            self.process_video_list(item)
+            self.process_video_list(info)
         elif isinstance(item, VidItem):
             self.process_cid_vid(info)
         elif isinstance(item, PlayInfoItem):
             self.process_play_info(info)
         elif isinstance(item, CommentInfoItem):
             self.process_comment_info(info)
+        elif isinstance(item, VideoInfoItem):
+            self.process_video_info(info)
 
         return item
 
-    def process_video_list(self, item):
-        video_info = item['info']
-        self.video_list_coll.update_one({'cid': video_info['cid']}, {'$set': video_info}, upsert=True)
-        self.history_video_list_coll.insert_one(video_info)
+    def process_video_list(self, info):
+        self.video_list_coll.update_one({'cid': info['cid']}, {'$set': info}, upsert=True)
+        self.history_video_list_coll.insert_one(info)
+
+    def process_video_info(self, info):
+        self.video_list_coll.update_one({'unique_id': info['unique_id']}, {'$set': info}, upsert=True)
 
     def process_play_info(self, info):
         self.play_info_coll.insert_one(info)
