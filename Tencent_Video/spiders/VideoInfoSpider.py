@@ -85,7 +85,7 @@ class VideoInfoSpider(RedisSpider):
             video_info_dict = json.loads(data_str)
         except Exception as e:
             self.logger.warning('json串解析出错，重试：{}, {}, {}, \n{}'
-                                .format(e, response.status, response.url, data_str))
+                                .format(e, response.status, response.url, response.text))
             yield scrapy.Request(response.url,
                                  callback=self.parse,
                                  meta={'params': params},
