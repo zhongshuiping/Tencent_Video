@@ -37,7 +37,7 @@ class UserInfoSpider(RedisSpider):
         'CONCURRENT_REQUESTS_PER_IP': 0,
         'EXTENSIONS': {'bo_lib.scrapy_tools.CloseSpiderRedis': 0},
         'CLOSE_SPIDER_AFTER_IDLE_TIMES': 3,
-        #'DOWNLOADER_MIDDLEWARES': {'bo_lib.scrapy_tools.BOProxyMiddlewareVPS': 740},
+        'DOWNLOADER_MIDDLEWARES': {'bo_lib.scrapy_tools.BOProxyMiddlewareVPS': 740},
     }
 
     def __init__(self):
