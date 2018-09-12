@@ -58,7 +58,7 @@ class TencentVideoPipeline(object):
             vids = info['vids']
             vids_coll_dict = self.cid_vid_coll.find_one({'cid': cid}, {'_id': 0, 'vids': 1})
             if vids_coll_dict:
-                info['tvids'] = list(set(vids) | set(vids_coll_dict['tvids']))
+                info['vids'] = list(set(vids) | set(vids_coll_dict['vids']))
             self.cid_vid_coll.update_one({'cid': cid}, {'$set': info}, upsert=True)
         elif flag == 2:
             self.cid_vid_coll.update_one({'cid': cid}, {'$set': info}, upsert=True)
