@@ -84,8 +84,8 @@ class VideoInfoSpider(RedisSpider):
             data_str = re.findall(r'VIDEO_INFO = (\{.*\})\s', response.text)[0] # 正则匹配任意个字符贪婪匹配
             video_info_dict = json.loads(data_str)
         except Exception as e:
-            self.logger.warning('json串解析出错，重试：{}, {}, {}, \n{}'
-                                .format(e, response.status, response.url, response.text))
+            self.logger.warning('json串解析出错，重试：{}, {}, {}'
+                                .format(e, response.status, response.url))
             yield scrapy.Request(response.url,
                                  callback=self.parse,
                                  meta={'params': params},
