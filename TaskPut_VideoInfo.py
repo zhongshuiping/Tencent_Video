@@ -12,6 +12,7 @@ r = RedisHelper().client
 VideoInfoSpider_key = 'TX_Video_VideoInfoSpider_key'
 VideoInfoSpider = 'VideoInfoSpider'
 cid_vid_coll = MongoDBHelper().get_collection(collection_name='cid_vid', database_name='TX_Video')
+video_info_coll = MongoDBHelper().get_collection(collection_name='video_info', database_name='TX_Video')
 
 def task_put():
     delete_old_logs(VideoInfoSpider, 5)
@@ -19,12 +20,18 @@ def task_put():
                                            {'_id': 0, 'vids': 1, 'cid': 1, 'type_name': 1})
     unhandle_cid_list = [x for x in cid_cursor]
     cid_cursor.close()
+    unique_id_cursor = video_info_coll.find({}, {'_id': 0, 'unique_id': 1})
+    unique_id_set = set([x['unique_id'] for x in unique_id_cursor])
+    unique_id_cursor.close()
     cid_record_list = []
     for unhandle_cid_dict in unhandle_cid_list:
         type_name = unhandle_cid_dict['type_name']
         cid = unhandle_cid_dict['cid']
         if unhandle_cid_dict.get('vids', []):
             for vid in unhandle_cid_dict['vids']:
+                unique_id = cid + '_' + vid
+                if unique_id in unique_id_set:
+                    continue
                 data = {
                     'cid': cid,
                     'vid': vid,
