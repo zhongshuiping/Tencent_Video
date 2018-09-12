@@ -217,6 +217,10 @@ class VideoListSpider(scrapy.Spider):
             item_['info'] = data
             yield item_
         else:
-            self.logger.info('该综艺栏目没有专辑页面，url：{}'.format(response.url))
+            self.logger.info('没有抓到专辑column_id，重试，url：{}状态码：{}'.format(response.url, response.status))
+            yield scrapy.Request(response.url,
+                                 callback=self.variety_final_page,
+                                 meta=response.meta,
+                                 dont_filter=True)
 
 
