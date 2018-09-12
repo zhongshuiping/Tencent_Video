@@ -27,3 +27,6 @@ class CommentInfoItem(scrapy.Item):
 
 class VideoInfoItem(scrapy.Item):
     info = scrapy.Field()
+
+class UserInfoItem(scrapy.Item):
+    info = scrapy.Field()

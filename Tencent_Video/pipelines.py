@@ -19,6 +19,7 @@ class TencentVideoPipeline(object):
         self.cid_vid_coll = self.client.get_collection(collection_name='cid_vid', database_name='TX_Video')
         self.play_info_coll = self.client.get_collection(collection_name='play_info', database_name='TX_Video')
         self.comment_info_coll = self.client.get_collection(collection_name='comment_info', database_name='TX_Video')
+        self.user_info_coll = self.client.get_collection(collection_name='user_info', database_name='TX_Video')
 
     def process_item(self, item, spider):
         info = item['info']
@@ -35,6 +36,8 @@ class TencentVideoPipeline(object):
             self.process_comment_info(info)
         elif isinstance(item, VideoInfoItem):
             self.process_video_info(info)
+        elif isinstance(item, UserInfoItem):
+            self.process_user_info(info)
 
         return item
 
@@ -47,6 +50,9 @@ class TencentVideoPipeline(object):
 
     def process_play_info(self, info):
         self.play_info_coll.insert_one(info)
+
+    def process_user_info(self, info):
+        self.user_info_coll.insert_one(info)
 
     def process_comment_info(self, info):
         self.comment_info_coll.insert_one(info)
