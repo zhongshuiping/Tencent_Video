@@ -49,6 +49,9 @@ class TencentVideoPipeline(object):
         self.video_info_coll.update_one({'unique_id': info['unique_id']}, {'$set': info}, upsert=True)
 
     def process_play_info(self, info):
+        if info['positive_play_count'] == -1 and info['play_count'] != -1: # 变相处理页面positive_play_count:null的情况
+            info['positive_play_count'] = 0
+            info['play_count'] = 0
         self.play_info_coll.insert_one(info)
 
     def process_user_info(self, info):
