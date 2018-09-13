@@ -53,8 +53,7 @@ def input_onetask(cid_dict):
 
 def cron_job():
     sched = BlockingScheduler()
-    sched.add_job(task_put, 'cron', day_of_week='sat', hour='13', id='GetTvidSpider')
-    #sched.add_job(task_put, 'cron', hour='14', minute='45', id='GetTvidSpider')
+    sched.add_job(task_put, 'cron', hour='14', id='TaskPut_PlayInfo')
     sched.start()
 if __name__ == '__main__':
-    task_put()
+    cron_job()

@@ -6,7 +6,7 @@
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 from bo_lib.general.mongodb_helper import MongoDBHelper
-import datetime, hashlib
+import datetime
 from .items import *
 from bo_lib.general.slack_notifier import BONotifier
 
@@ -76,3 +76,34 @@ class TencentVideoPipeline(object):
     def close_spider(self, spider):
         try:BONotifier().msg('Tencent_Video {} closed'.format(spider.name), '@kang')
         except:pass
+        ts_string = str(datetime.date.today())
+        if spider.name == 'CommentInfoSpider':
+            CommentCount_daily = self.comment_info_coll.find({'ts_string': ts_string}).count()
+            try:
+                BONotifier().msg('Tencent_Video CommentInfo_daily({}):{}'.format(ts_string, CommentCount_daily), '@kang')
+            except:
+                pass
+        elif spider.name == 'PlayInfoSpider':
+            PlayCount_daily = self.play_info_coll.find({'ts_string': ts_string}).count()
+            try:
+                BONotifier().msg('Tencent_Video PlayCount_daily({}):{}'.format(ts_string, PlayCount_daily), '@kang')
+            except:
+                pass
+        elif spider.name == 'VideoListSpider':
+            VideoList_daily = self.video_list_coll.find({'ts_string': ts_string}).count()
+            try:
+                BONotifier().msg('Tencent_Video VideoList_daily({}):{}'.format(ts_string, VideoList_daily), '@kang')
+            except:
+                pass
+        elif spider.name == 'VideoInfoSpider':
+            VideoInfo_daily = self.video_info_coll.find({'ts_string': ts_string}).count()
+            try:
+                BONotifier().msg('Tencent_Video VideoInfo_daily({}):{}'.format(ts_string, VideoInfo_daily), '@kang')
+            except:
+                pass
+        elif spider.name == 'UserInfoSpider':
+            UserInfo_weekly = self.user_info_coll.find({'ts_string': ts_string}).count()
+            try:
+                BONotifier().msg('Tencent_Video UserInfo_weekly({}):{}'.format(ts_string, UserInfo_weekly), '@kang')
+            except:
+                pass

@@ -15,7 +15,6 @@ video_list_coll = MongoDBHelper().get_collection(collection_name='video_list', d
 
 def task_put():
     delete_old_logs(GetVidSpider, 5)
-    #date_str = str(datetime.date.today())
     cid_cursor = video_list_coll.find({},
                                            {'_id': 0, 'url': 1, 'cid': 1, 'type_name': 1})
     cid_record_list = [x for x in cid_cursor]
@@ -33,8 +32,7 @@ def input_onetask(cid_dict):
 
 def cron_job():
     sched = BlockingScheduler()
-    sched.add_job(task_put, 'cron', day_of_week='sat', hour='13', id='GetTvidSpider')
-    #sched.add_job(task_put, 'cron', hour='14', minute='45', id='GetTvidSpider')
+    sched.add_job(task_put, 'cron', hour='12', id='TaskPut_GetVid')
     sched.start()
 if __name__ == '__main__':
-    task_put()
+    cron_job()

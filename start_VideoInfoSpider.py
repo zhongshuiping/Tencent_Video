@@ -8,8 +8,8 @@ def job():
 
 def cron_job():
     sched = BlockingScheduler()
-    sched.add_job(job, 'cron', day_of_week='sat', hour='13', minute='10', id='startGetTvidSpider')
+    sched.add_job(job, 'cron', hour='14', minute='10', id='VideoInfoSpider')
     sched.start()
 
 if __name__ == '__main__':
-    job()
+    cron_job()
