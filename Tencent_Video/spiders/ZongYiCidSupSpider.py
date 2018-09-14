@@ -4,6 +4,7 @@ from ..items import VideoListItem
 from pyquery import PyQuery as pq
 import datetime, json
 import re, os
+from ..scrapy_helper import delete_old_logs
 
 class ZongYiCidSupSpider(scrapy.Spider):
     name = 'ZongYiCidSupSpider'
@@ -41,6 +42,7 @@ class ZongYiCidSupSpider(scrapy.Spider):
                           '&appid=20001174&sourceid=10001&listappid=10385&listappkey=10385' \
                           '&playright=2&sourcetype=1&cidorder=1&locate_type=0&lid={cid}' \
                           '&pagesize=1&offset=0' # pagesize最大30 offset为偏移量
+        delete_old_logs(self.name, 7)
 
     def start_requests(self):
         for i in range(1, 100000):
