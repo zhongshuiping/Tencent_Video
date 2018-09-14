@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
 from ..items import VideoListItem
+from pyquery import PyQuery as pq
 import datetime, json
 import re, os
 
@@ -21,6 +22,12 @@ class ZongYiCidSupSpider(scrapy.Spider):
     }
 
     def __init__(self):
+        self.album_headers = {
+            "Host": "v.qq.com",
+            "Proxy-Connection": "keep-alive",
+            "User-Agent":
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36",
+        }
         self.zongyi_headers = {
             "Host": "list.video.qq.com",
             "Proxy-Connection": "keep-alive",
@@ -43,7 +50,7 @@ class ZongYiCidSupSpider(scrapy.Spider):
             url = self.zongyi_url.format(cid=cid)
             params = {'cid': cid,
                       'type_name': type_name,
-                      'album_url': album_url,
+                      'url': album_url,
                       }
             yield scrapy.Request(url,
                                   headers=self.zongyi_headers,
@@ -74,6 +81,7 @@ class ZongYiCidSupSpider(scrapy.Spider):
 
         results = album_data_dict['jsonvalue'].get('results', [])
         if results:
+            '''
             data = {
                 'cid': params['cid'],
                 'type_name': params['type_name'],
@@ -84,8 +92,45 @@ class ZongYiCidSupSpider(scrapy.Spider):
             item = VideoListItem()
             item['info'] = data
             yield item
+            '''
+            params['title'] = results[0]['fields']['title']
+            params['zongyi_sup'] = 1
+            yield scrapy.Request(params['url'],
+                                 headers=self.album_headers,
+                                 callback=self.album_parse,
+                                 meta={'params': params},
+                                 dont_filter=True)
         else:
             self.logger.debug('无效cid或僵尸专辑：{}'.format(params['cid']))
+
+    def album_parse(self, response):
+        if response.status in self.handle_httpstatus_list:
+            self.logger.warning('超过重试次数,继续重试,状态码：{},url：{}'.format(response.status, response.url))
+            yield scrapy.Request(response.url,
+                                 headers=self.album_headers,
+                                 callback=self.album_parse,
+                                 meta=response.meta,
+                                 dont_filter=True)
+            return
+        try:
+            doc = pq(response.text)
+        except Exception as e:
+            self.logger.warning('pq对象创建失败，url：{},失败原因：{}'.format(response.url, e))
+            yield scrapy.Request(response.url,
+                                 headers=self.album_headers,
+                                 callback=self.album_parse,
+                                 meta=response.meta,
+                                 dont_filter=True)
+            return
+        params = response.meta['params']
+        title_a = doc('.video_title_cn > a')
+        if title_a:
+            params['title'] = title_a.text()
+        else:
+            self.logger.info('页面无title标签 url:{}'.format(response.url))
+        item = VideoListItem()
+        item['info'] = params
+        yield item
 
 
 
