@@ -54,4 +54,4 @@ def cron_job():
     sched.add_job(task_put, 'cron', hour='14', id='TaskPut_VideoInfo')
     sched.start()
 if __name__ == '__main__':
-    cron_job()
+    task_put()
