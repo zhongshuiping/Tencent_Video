@@ -85,6 +85,7 @@ class CommentInfoSpider(RedisSpider):
         try:
             data_str = re.findall(r'QZOutputJson=(\{[\s\S]+\})', response.text)[0]
             comment_id_dict = json.loads(data_str)
+            comment_id = comment_id_dict['comment_id']
         except Exception as e:
             self.logger.warning('json串解析出错，重试：{}, {}, {}'.format(e, response.status, response.url))
             yield scrapy.Request(response.url,
@@ -93,7 +94,6 @@ class CommentInfoSpider(RedisSpider):
                                  meta={'params': params},
                                  dont_filter=True)
             return
-        comment_id = comment_id_dict['comment_id']
         if comment_id == '0':
             self.logger.info('comment_id为0，url：{}，cid：{}'.format(response.url, params['cid']))
             params['comment_num'] = 0
