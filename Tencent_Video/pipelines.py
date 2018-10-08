@@ -42,8 +42,11 @@ class TencentVideoPipeline(object):
         return item
 
     def process_video_list(self, info):
-        self.video_list_coll.update_one({'cid': info['cid']}, {'$set': info}, upsert=True)
         self.history_video_list_coll.insert_one(info)
+        if info['type_name'] == '微电影':
+            # 20181009开始 所有微电影并到电影里
+            info['type_name'] = '电影'
+        self.video_list_coll.update_one({'cid': info['cid']}, {'$set': info}, upsert=True)
 
     def process_video_info(self, info):
         self.video_info_coll.update_one({'unique_id': info['unique_id']}, {'$set': info}, upsert=True)
