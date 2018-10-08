@@ -73,10 +73,14 @@ class TencentVideoPipeline(object):
             self.cid_vid_coll.update_one({'cid': cid}, {'$set': info}, upsert=True)
 
     def open_spider(self, spider):
+        '''
         try:BONotifier().msg('Tencent_Video {} opened'.format(spider.name), '@kang')
         except:pass
+        '''
+        pass
 
     def close_spider(self, spider):
+        '''
         try:BONotifier().msg('Tencent_Video {} closed'.format(spider.name), '@kang')
         except:pass
         ts_string = str(datetime.date.today())
@@ -110,3 +114,5 @@ class TencentVideoPipeline(object):
                 BONotifier().msg('Tencent_Video UserInfo_weekly({}):{}'.format(ts_string, UserInfo_weekly), '@kang')
             except:
                 pass
+        '''
+        pass

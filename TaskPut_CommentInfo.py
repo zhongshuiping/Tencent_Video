@@ -40,7 +40,7 @@ def task_put():
                     }
                     cid_record_list.append(data)
     try:
-        BONotifier().msg('CommentInfoSpider: 所有栏目list=={}'.format(len(cid_record_list)), '@kang')
+        BONotifier().msg('TX_Video CommentInfoSpider: 所有栏目list=={}'.format(len(cid_record_list)), '@kang')
     except:
         pass
 

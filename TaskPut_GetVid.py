@@ -20,7 +20,7 @@ def task_put():
     cid_record_list = [x for x in cid_cursor]
     cid_cursor.close()
     try:
-        BONotifier().msg('GetVidSpider: 所有栏目list=={}'.format(len(cid_record_list)), '@kang')
+        BONotifier().msg('TX_Video GetVidSpider: 所有栏目list=={}'.format(len(cid_record_list)), '@kang')
     except:
         pass
 
