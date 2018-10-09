@@ -1,11 +1,10 @@
 import scrapy
-from scrapy_redis.spiders import RedisSpider
 import json, re
 import os
 import datetime
 from ..items import PlayInfoDemoItem
 
-class PlayInfoDemoSpider(RedisSpider):
+class PlayInfoDemoSpider(scrapy):
     name = 'PlayInfoDemoSpider'
     handle_httpstatus_list = [503, 429, 402, 404, 302, 564]
     os.makedirs('logs', exist_ok=True)
@@ -18,16 +17,14 @@ class PlayInfoDemoSpider(RedisSpider):
             'Proxy-Connection': 'keep-alive',
 
         },
-        'LOG_FILE': 'logs/PlayInfoSpider_' + str(datetime.datetime.now()) + '.log',
+        'LOG_FILE': 'logs/PlayInfoDemoSpider_' + str(datetime.datetime.now()) + '.log',
         'REDIRECT_ENABLED': False,
         'DOWNLOAD_DELAY': 0,
-        'DOWNLOAD_TIMEOUT': 7,
+        'DOWNLOAD_TIMEOUT': 3,
         'RETRY_TIMES': 30,
         'CONCURRENT_REQUESTS': 30,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 200,
         'CONCURRENT_REQUESTS_PER_IP': 0,
-        'EXTENSIONS': {'bo_lib.scrapy_tools.CloseSpiderRedis': 0},
-        'CLOSE_SPIDER_AFTER_IDLE_TIMES': 3,
         'DOWNLOADER_MIDDLEWARES': {'bo_lib.scrapy_tools.BOProxyMiddlewareVPS': 740},
     }
 
