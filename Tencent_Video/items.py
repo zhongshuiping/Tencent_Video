@@ -22,6 +22,9 @@ class VidItem(scrapy.Item):
 class PlayInfoItem(scrapy.Item):
     info = scrapy.Field()
 
+class PlayInfoDemoItem(scrapy.Item):
+    info = scrapy.Field()
+
 class CommentInfoItem(scrapy.Item):
     info = scrapy.Field()
 
