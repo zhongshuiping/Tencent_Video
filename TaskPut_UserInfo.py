@@ -11,7 +11,7 @@ user_redis_key = 'TX_Video_UserInfoSpider_key'
 combo_flag = True
 COMBO_TOPID = ['10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']
 
-def get_sample(combo_flag):
+def get_sample():
     uid_list = []
     if not combo_flag:
         uid_list = random.sample(range(0, 10000 * 10000 * 10), 100 * 10000) # 全部随机抽取50w
@@ -22,12 +22,12 @@ def get_sample(combo_flag):
                                           5 * 10000))
     return uid_list
 
-def generate_uid(combo_flag):
-    uid_list = get_sample(combo_flag)
+def generate_uid():
+    uid_list = get_sample()
     ThreadPoolExecutor(30).map(input_onetask, uid_list)
 
 def job():
-    generate_uid(combo_flag)
+    generate_uid()
     os.system("scrapy crawl UserInfoSpider")
 
 def input_onetask(uid):
@@ -39,4 +39,4 @@ def cron_job():
     sched.start()
 
 if __name__ == '__main__':
-    generate_uid(combo_flag)
+    generate_uid()
