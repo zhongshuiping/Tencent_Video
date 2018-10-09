@@ -4,7 +4,7 @@ import os
 import datetime
 from ..items import PlayInfoDemoItem
 
-class PlayInfoDemoSpider(scrapy):
+class PlayInfoDemoSpider(scrapy.Spider):
     name = 'PlayInfoDemoSpider'
     handle_httpstatus_list = [503, 429, 402, 404, 302, 564]
     os.makedirs('logs', exist_ok=True)
