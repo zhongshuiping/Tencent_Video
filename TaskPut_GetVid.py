@@ -15,7 +15,7 @@ video_list_coll = MongoDBHelper().get_collection(collection_name='video_list', d
 
 def task_put():
     delete_old_logs(GetVidSpider, 5)
-    cid_cursor = video_list_coll.find({},
+    cid_cursor = video_list_coll.find({'dup_flag': {'$exists': 0}},
                                            {'_id': 0, 'url': 1, 'cid': 1, 'type_name': 1})
     cid_record_list = [x for x in cid_cursor]
     cid_cursor.close()
